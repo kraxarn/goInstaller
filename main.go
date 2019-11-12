@@ -5,6 +5,9 @@ import (
 	"github.com/andlabs/ui"
 )
 
+// Application preferences
+const appName = "APP_NAME"
+
 // Main window
 var mainWindow *ui.Window
 
@@ -18,7 +21,7 @@ func makePage() ui.Control {
 	vBox.Append(group, false)
 
 	// Text
-	label := ui.NewLabel("\t∙ OpenRQ")
+	label := ui.NewLabel("\t∙ " + appName)
 	vBox.Append(label, false)
 
 	// Progress
