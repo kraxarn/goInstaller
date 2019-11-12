@@ -1,11 +1,10 @@
-# GoInstaller: Generic installer written in Go
+# goInstaller: Generic installer written in Go
 (not just for applications written in Go)
-
-**Currently in a pretty early state (pre-alpha)**
+**Currently in an early state (pre-alpha)**
 
 ## How it installs
-* Downloads a specific file
-* Extracts is at a specific location
+* Downloads a specific zip file
+* Extracts it at a specific location
 * Optionally creates shortcuts
 
 ## Missing/planned features
