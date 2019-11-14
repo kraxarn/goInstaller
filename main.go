@@ -41,6 +41,32 @@ func MakePage() ui.Control {
 
 	// Install option
 	// TODO
+	// About option
+	btnAbout := ui.NewButton("?")
+	btnAbout.OnClicked(func(button *ui.Button) {
+		btnAbout.Disable()
+
+		aboutWindow := ui.NewWindow("About", 300, 300, false)
+
+		licenseContent := ui.NewMultilineEntry()
+		licenseContent.Append(licenses)
+
+		tabs := ui.NewTab()
+		tabs.Append("About", ui.NewLabel("goInstaller v0.1\nhttps://github.com/kraxarn/goInstaller\nLicensed under BSD-3"))
+		tabs.SetMargined(0, true)
+		tabs.Append("Licenses", licenseContent)
+		tabs.SetMargined(1, true)
+		aboutWindow.SetChild(tabs)
+
+		aboutWindow.SetMargined(true)
+		aboutWindow.Show()
+
+		aboutWindow.OnClosing(func(window *ui.Window) bool {
+			window.Hide()
+			btnAbout.Enable()
+			return true
+		})
+	})
 
 	// Option buttons
 	grid := ui.NewGrid()
