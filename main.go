@@ -140,8 +140,8 @@ func MakePage() ui.Control {
 	// Option buttons
 	grid := ui.NewGrid()
 	grid.SetPadded(true)
-	grid.Append(btnCancel, 0, 0, 1, 1, true, ui.AlignFill, false, ui.AlignFill)
-	grid.Append(ui.NewButton("Install"), 1, 0, 1, 1, true, ui.AlignFill, false, ui.AlignFill)
+	grid.Append(btnAbout, 0, 0, 1, 1, false, ui.AlignStart, false, ui.AlignFill)
+	grid.Append(btnCancel, 1, 0, 1, 1, true, ui.AlignFill, false, ui.AlignFill)
 	grid.Append(btnInstall, 2, 0, 1, 1, true, ui.AlignFill, false, ui.AlignFill)
 	vBox.Append(grid, false)
 
