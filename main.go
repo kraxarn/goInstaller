@@ -2,7 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/andlabs/ui"
+	"fyne.io/fyne"
+	"fyne.io/fyne/app"
+	"fyne.io/fyne/dialog"
+	"fyne.io/fyne/layout"
+	"fyne.io/fyne/widget"
 	"github.com/cavaliercoder/grab"
 	"io/ioutil"
 	"log"
@@ -18,9 +22,6 @@ const appName = "APP_NAME"
 // Base URL for downloaded files
 // (%s gets replaced by current platform, windows/linux/darwin)
 const baseUrl = "https://example.com/%s.zip"
-
-// Main window
-var mainWindow *ui.Window
 
 /// Gets the username from whoami
 func GetUsername() string {
@@ -57,7 +58,7 @@ func GetTempPath() string {
 }
 
 // Starts download and updates progress bar 0-50
-func Download(progress *ui.ProgressBar) error {
+func Download(progress *widget.ProgressBar) error {
 	// Create HTTP client
 	client := grab.NewClient()
 	// Create request
@@ -79,7 +80,7 @@ func Download(progress *ui.ProgressBar) error {
 		select {
 		// Check for progress
 		case <-ticker.C:
-			progress.SetValue(int(response.Progress() * 50))
+			progress.SetValue(response.Progress() / 2.0)
 		// Check if we're done
 		case <-response.Done:
 			if err := response.Err(); err != nil {
@@ -90,102 +91,75 @@ func Download(progress *ui.ProgressBar) error {
 	}
 }
 
-func MakePage() ui.Control {
-	// Main vertical layout
-	vBox := ui.NewVerticalBox()
-	vBox.SetPadded(true)
+func MakeContent(parent fyne.Window) fyne.CanvasObject {
 
-	// Title
-	group := ui.NewGroup("This will install:")
-	vBox.Append(group, false)
+	// Install progress
+	progress := widget.NewProgressBar()
 
-	// Text
-	label := ui.NewLabel("\t" + appName)
-	vBox.Append(label, false)
-
-	// Progress
-	progress := ui.NewProgressBar()
-	vBox.Append(progress, false)
-
-	// Cancel option
-	btnCancel := ui.NewButton("Cancel")
-	btnCancel.OnClicked(func(button *ui.Button) {
-		ui.Quit()
+	// Install button
+	var btnInstall *widget.Button
+	btnInstall = widget.NewButton("Install", func() {
+		go func() {
+			btnInstall.Disable()
+			progress.SetValue(0)
+			if err := Download(progress); err != nil {
+				dialog.ShowError(err, parent)
+				btnInstall.Enable()
+			}
+		}()
 	})
 
-	// Install option
-	btnInstall := ui.NewButton("Install")
-	btnInstall.OnClicked(func(button *ui.Button) {
-		button.Disable()
-		progress.SetValue(-1)
-		if err := Download(progress); err != nil {
-			ui.MsgBoxError(mainWindow, "Download Error", err.Error())
-		}
-	})
-
-	// About option
-	btnAbout := ui.NewButton("?")
-	btnAbout.OnClicked(func(button *ui.Button) {
-		btnAbout.Disable()
-
-		aboutWindow := ui.NewWindow("About", 300, 300, false)
-
-		licenseContent := ui.NewMultilineEntry()
-		licenseContent.Append(licenses)
-
-		tabs := ui.NewTab()
-		tabs.Append("About", ui.NewLabel("goInstaller v0.1\nhttps://github.com/kraxarn/goInstaller\nLicensed under BSD-3"))
-		tabs.SetMargined(0, true)
-		tabs.Append("Licenses", licenseContent)
-		tabs.SetMargined(1, true)
-		aboutWindow.SetChild(tabs)
-
-		aboutWindow.SetMargined(true)
-		aboutWindow.Show()
-
-		aboutWindow.OnClosing(func(window *ui.Window) bool {
-			window.Hide()
-			btnAbout.Enable()
-			return true
-		})
-	})
-
-	// Option buttons
-	grid := ui.NewGrid()
-	grid.SetPadded(true)
-	grid.Append(btnAbout, 0, 0, 1, 1, false, ui.AlignStart, false, ui.AlignFill)
-	grid.Append(btnCancel, 1, 0, 1, 1, true, ui.AlignFill, false, ui.AlignFill)
-	grid.Append(btnInstall, 2, 0, 1, 1, true, ui.AlignFill, false, ui.AlignFill)
-	vBox.Append(grid, false)
-
-	return vBox
-}
-
-func SetupUi() {
-	// Create the main window
-	mainWindow = ui.NewWindow("Installer", 300, 120, false)
-
-	// Setup closing stuff
-	mainWindow.OnClosing(func(*ui.Window) bool {
-		ui.Quit()
-		return true
-	})
-	ui.OnShouldQuit(func() bool {
-		mainWindow.Destroy()
-		return true
-	})
-
-	// Add child to main window and show it
-	mainWindow.SetChild(MakePage())
-	mainWindow.SetMargined(true)
-	mainWindow.Show()
+	return widget.NewVBox(
+		// Label with what to install
+		widget.NewGroup("This will install:", widget.NewLabel(appName)),
+		// Install progress
+		progress,
+		// Install button
+		layout.NewSpacer(),
+		btnInstall,
+	)
 }
 
 func main() {
-	// Start application
-	err := ui.Main(SetupUi)
-	// Check if something went wrong
-	if err != nil {
-		fmt.Println("Error: ", err)
-	}
+	// License window to refer to later
+	var licenseWindow fyne.Window
+
+	// Create new main app
+	mainApp := app.New()
+	// Create window
+	window := mainApp.NewWindow("Installer")
+	window.Resize(fyne.Size{Width: 400, Height: 200})
+	window.CenterOnScreen()
+
+	// Set window menu
+	window.SetMainMenu(fyne.NewMainMenu(
+		fyne.NewMenu("File",
+			fyne.NewMenuItem("About", func() {
+				dialog.ShowInformation(
+					"About",
+					"goInstaller v0.1\nhttps://github.com/kraxarn/goInstaller\nLicensed under BSD-3", window)
+			}),
+			fyne.NewMenuItem("Licenses", func() {
+				// Check if we already have a license window open
+				if licenseWindow != nil {
+					return
+				}
+				// Create window with content and reset on close
+				licenseWindow = fyne.CurrentApp().NewWindow("Licenses")
+				licenseWindow.Resize(fyne.Size{Width: 0, Height: 800})
+				licenseWindow.CenterOnScreen()
+				licenseWindow.SetPadded(true)
+				licenseWindow.SetContent(widget.NewScrollContainer(widget.NewLabel(licenses)))
+				licenseWindow.Show()
+				licenseWindow.SetOnClosed(func() {
+					licenseWindow = nil
+				})
+			}),
+		),
+	))
+
+	// Set what to show in the window
+	window.SetContent(MakeContent(window))
+	// Show window
+	window.ShowAndRun()
 }
