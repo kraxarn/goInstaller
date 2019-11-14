@@ -48,6 +48,39 @@ func GetTempPath() string {
 	// Get full Windows temp path
 	return fmt.Sprintf("C:/Users/%s/AppData/Local/Temp", GetUsername())
 }
+
+// Starts download and updates progress bar 0-50
+func Download(path string, output string, progress *ui.ProgressBar) error {
+	// Create HTTP client
+	client := grab.NewClient()
+	// Create request
+	request, err := grab.NewRequest(
+		fmt.Sprintf("%s/download.zip", GetTempPath()),
+		fmt.Sprintf(baseUrl, runtime.GOOS))
+	if err != nil {
+		return err
+	}
+	// Get response
+	response := client.Do(request)
+
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		// Check for progress
+		case <-ticker.C:
+			progress.SetValue(int(response.Progress() * 50))
+		// Check if we're done
+		case <-response.Done:
+			if err := response.Err(); err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+}
+
 func MakePage() ui.Control {
 	// Main vertical layout
 	vBox := ui.NewVerticalBox()
