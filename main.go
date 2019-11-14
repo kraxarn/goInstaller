@@ -15,7 +15,8 @@ const baseUrl = "https://example.com/{platform}.zip"
 // Main window
 var mainWindow *ui.Window
 
-func makePage() ui.Control {
+/// Gets the username from whoami
+func MakePage() ui.Control {
 	// Main vertical layout
 	vBox := ui.NewVerticalBox()
 	vBox.SetPadded(true)
@@ -51,7 +52,7 @@ func makePage() ui.Control {
 	return vBox
 }
 
-func setupUi() {
+func SetupUi() {
 	// Create the main window
 	mainWindow = ui.NewWindow("Installer", 300, 120, false)
 
@@ -66,14 +67,14 @@ func setupUi() {
 	})
 
 	// Add child to main window and show it
-	mainWindow.SetChild(makePage())
+	mainWindow.SetChild(MakePage())
 	mainWindow.SetMargined(true)
 	mainWindow.Show()
 }
 
 func main() {
 	// Start application
-	err := ui.Main(setupUi)
+	err := ui.Main(SetupUi)
 	// Check if something went wrong
 	if err != nil {
 		fmt.Println("Error: ", err)
