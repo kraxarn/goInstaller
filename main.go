@@ -91,7 +91,7 @@ func MakePage() ui.Control {
 	vBox.Append(group, false)
 
 	// Text
-	label := ui.NewLabel("\t∙ " + appName)
+	label := ui.NewLabel("\t" + appName)
 	vBox.Append(label, false)
 
 	// Progress
