@@ -39,6 +39,15 @@ func GetUsername() string {
 	// Convert byte[] to string, trim and return
 	return strings.Trim(fmt.Sprintf("%s", result), "\n ")
 }
+
+func GetTempPath() string {
+	// If we're not on windows
+	if runtime.GOOS != "windows" {
+		return "/tmp"
+	}
+	// Get full Windows temp path
+	return fmt.Sprintf("C:/Users/%s/AppData/Local/Temp", GetUsername())
+}
 func MakePage() ui.Control {
 	// Main vertical layout
 	vBox := ui.NewVerticalBox()
