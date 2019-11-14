@@ -16,6 +16,29 @@ const baseUrl = "https://example.com/{platform}.zip"
 var mainWindow *ui.Window
 
 /// Gets the username from whoami
+func GetUsername() string {
+	// Figure out what command to run
+	name := "whoami"
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+
+	// Create the command and stdout pipe
+	cmd := exec.Command(name)
+	stdout, _ := cmd.StdoutPipe()
+
+	// Start and check for errors
+	if err := cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Read first output
+	// (it is the only output we expect)
+	result, _ := ioutil.ReadAll(stdout)
+
+	// Convert byte[] to string, trim and return
+	return strings.Trim(fmt.Sprintf("%s", result), "\n ")
+}
 func MakePage() ui.Control {
 	// Main vertical layout
 	vBox := ui.NewVerticalBox()
