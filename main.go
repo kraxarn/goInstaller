@@ -8,6 +8,10 @@ import (
 // Application name
 const appName = "APP_NAME"
 
+// Base URL for downloaded files
+// ({platform} gets replaced by current platform, windows/linux/darwin)
+const baseUrl = "https://example.com/{platform}.zip"
+
 // Main window
 var mainWindow *ui.Window
 
