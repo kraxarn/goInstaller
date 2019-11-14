@@ -105,7 +105,11 @@ func MakePage() ui.Control {
 	})
 
 	// Install option
-	// TODO
+	btnInstall := ui.NewButton("Install")
+	btnInstall.OnClicked(func(button *ui.Button) {
+		button.Disable()
+	})
+
 	// About option
 	btnAbout := ui.NewButton("?")
 	btnAbout.OnClicked(func(button *ui.Button) {
@@ -138,6 +142,7 @@ func MakePage() ui.Control {
 	grid.SetPadded(true)
 	grid.Append(btnCancel, 0, 0, 1, 1, true, ui.AlignFill, false, ui.AlignFill)
 	grid.Append(ui.NewButton("Install"), 1, 0, 1, 1, true, ui.AlignFill, false, ui.AlignFill)
+	grid.Append(btnInstall, 2, 0, 1, 1, true, ui.AlignFill, false, ui.AlignFill)
 	vBox.Append(grid, false)
 
 	return vBox
