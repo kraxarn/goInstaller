@@ -57,7 +57,7 @@ func GetTempPath() string {
 }
 
 // Starts download and updates progress bar 0-50
-func Download(path string, output string, progress *ui.ProgressBar) error {
+func Download(progress *ui.ProgressBar) error {
 	// Create HTTP client
 	client := grab.NewClient()
 	// Create request
