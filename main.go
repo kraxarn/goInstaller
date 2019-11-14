@@ -70,7 +70,9 @@ func Download(path string, output string, progress *ui.ProgressBar) error {
 	// Get response
 	response := client.Do(request)
 
+	// Create ticker
 	ticker := time.NewTicker(time.Second)
+	// Stop ticker when we're done
 	defer ticker.Stop()
 
 	for {
