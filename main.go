@@ -5,7 +5,7 @@ import (
 	"github.com/andlabs/ui"
 )
 
-// Application preferences
+// Application name
 const appName = "APP_NAME"
 
 // Main window
