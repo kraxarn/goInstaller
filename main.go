@@ -117,6 +117,10 @@ func MakePage() ui.Control {
 	btnInstall := ui.NewButton("Install")
 	btnInstall.OnClicked(func(button *ui.Button) {
 		button.Disable()
+		progress.SetValue(-1)
+		if err := Download(progress); err != nil {
+			ui.MsgBoxError(mainWindow, "Download Error", err.Error())
+		}
 	})
 
 	// About option
