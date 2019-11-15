@@ -23,6 +23,12 @@ const appName = "APP_NAME"
 // (%s gets replaced by current platform, windows/linux/darwin)
 const baseUrl = "https://example.com/%s.zip"
 
+// All files to download
+// Only files ending with .zip are extracted
+var files = []string{
+	"%s.zip",
+}
+
 /// Gets the username from whoami
 func GetUsername() string {
 	// Figure out what command to run
