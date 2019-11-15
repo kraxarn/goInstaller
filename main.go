@@ -63,6 +63,17 @@ func GetTempPath() string {
 	return fmt.Sprintf("C:/Users/%s/AppData/Local/Temp/", GetUsername())
 }
 
+func GetFileFromPath(path string) string {
+	// Try to get last index of /
+	lastIndex := strings.LastIndex(path, "/") + 1
+	// -1 + 1 = 0, so lastIndex is 0 if failed
+	if lastIndex == 0 {
+		return path
+	}
+	// Return final string
+	return path[lastIndex:]
+}
+
 // Starts download and updates progress bar 0-50
 func Download(progress *widget.ProgressBar) error {
 	// Create HTTP client
