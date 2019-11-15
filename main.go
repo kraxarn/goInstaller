@@ -100,6 +100,8 @@ func Download(progress *widget.ProgressBar) error {
 func MakeContent(parent fyne.Window) fyne.CanvasObject {
 	// Install progress
 	progress := widget.NewProgressBar()
+	// Status message
+	status := widget.NewLabel("Waiting...")
 
 	// Install button
 	var btnInstall *widget.Button
@@ -116,7 +118,7 @@ func MakeContent(parent fyne.Window) fyne.CanvasObject {
 
 	return widget.NewVBox(
 		// Label with what to install
-		widget.NewGroup("This will install:", widget.NewLabel(appName)),
+		widget.NewGroup(fmt.Sprintf("Welcome to the %s installer!", appName), status),
 		// Install progress
 		progress,
 		// Install button
