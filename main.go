@@ -63,6 +63,23 @@ func GetTempPath() string {
 	return fmt.Sprintf("C:/Users/%s/AppData/Local/Temp/", GetUsername())
 }
 
+// Gets the install path
+func GetInstallPath() string {
+	// Default current directory
+	dir := "%s/%s/"
+	// Try to match platform
+	switch runtime.GOOS {
+	case "windows":
+		dir = "C:/Users/%s/AppData/Local/%s/"
+	case "linux":
+		dir = "/home/%s/.local/share/%s/"
+	case "darwin":
+		dir = "/home/%s/Applications/%s/"
+	}
+	// Return formatted string
+	return fmt.Sprintf(dir, GetUsername(), appName)
+}
+
 func GetFileFromPath(path string) string {
 	// Try to get last index of /
 	lastIndex := strings.LastIndex(path, "/") + 1
