@@ -120,6 +120,10 @@ func MakeContent(parent fyne.Window) fyne.CanvasObject {
 	)
 }
 
+func LoadIcon() fyne.Resource {
+	return fyne.NewStaticResource("icon.png", icon)
+}
+
 func main() {
 	// License window to refer to later
 	var licenseWindow fyne.Window
@@ -130,6 +134,7 @@ func main() {
 	window := mainApp.NewWindow("Installer")
 	window.Resize(fyne.Size{Width: 400, Height: 200})
 	window.CenterOnScreen()
+	window.SetIcon(LoadIcon())
 
 	// Set window menu
 	window.SetMainMenu(fyne.NewMainMenu(
