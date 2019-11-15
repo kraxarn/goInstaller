@@ -57,10 +57,10 @@ func GetUsername() string {
 func GetTempPath() string {
 	// If we're not on windows
 	if runtime.GOOS != "windows" {
-		return "/tmp"
+		return "/tmp/"
 	}
 	// Get full Windows temp path
-	return fmt.Sprintf("C:/Users/%s/AppData/Local/Temp", GetUsername())
+	return fmt.Sprintf("C:/Users/%s/AppData/Local/Temp/", GetUsername())
 }
 
 // Starts download and updates progress bar 0-50
