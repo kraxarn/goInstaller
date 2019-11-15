@@ -92,7 +92,6 @@ func Download(progress *widget.ProgressBar) error {
 }
 
 func MakeContent(parent fyne.Window) fyne.CanvasObject {
-
 	// Install progress
 	progress := widget.NewProgressBar()
 
