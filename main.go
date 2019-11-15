@@ -78,33 +78,48 @@ func GetFileFromPath(path string) string {
 func Download(progress *widget.ProgressBar) error {
 	// Create HTTP client
 	client := grab.NewClient()
-	// Create request
-	request, err := grab.NewRequest(
-		fmt.Sprintf("%s/download.zip", GetTempPath()),
-		fmt.Sprintf(baseUrl, runtime.GOOS))
-	if err != nil {
-		return err
-	}
-	// Get response
-	response := client.Do(request)
-
-	// Create ticker
-	ticker := time.NewTicker(time.Second)
-	// Stop ticker when we're done
-	defer ticker.Stop()
-
-	for {
-		select {
-		// Check for progress
-		case <-ticker.C:
-			progress.SetValue(response.Progress() / 2.0)
-		// Check if we're done
-		case <-response.Done:
-			if err := response.Err(); err != nil {
-				return err
-			}
-			return nil
+	// Create a new request for each file to download
+	for i := 0; i < len(files); {
+		// Get file we're downloading
+		file := baseUrl + fmt.Sprintf(files[i], runtime.GOOS)
+		fileName := GetFileFromPath(file)
+		fmt.Println("Attempting to download:", file)
+		// Create request
+		request, err := grab.NewRequest(GetTempPath() + fileName, file)
+		if err != nil {
+			return err
 		}
+		// Get response
+		response := client.Do(request)
+
+		// Create ticker
+		ticker := time.NewTicker(time.Second)
+
+		// Create variable for when to run loop
+		run := true
+		for run {
+			select {
+			// Check for progress
+			case <-ticker.C:
+				progress.SetValue(response.Progress())
+			// Check if we're done
+			case <-response.Done:
+				if err := response.Err(); err != nil {
+					// Something went wrong, stop ticker and return error
+					ticker.Stop()
+					return err
+				}
+				// File downloaded, stop ticker and go to next file
+				ticker.Stop()
+				run = false
+			}
+		}
+
+		i++
+	}
+
+	return nil
+}
 	}
 }
 
