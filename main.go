@@ -256,6 +256,10 @@ func MakeContent(parent fyne.Window) fyne.CanvasObject {
 			if err := Download(progress, status); err != nil  {
 				dialog.ShowError(err, parent)
 				status.SetText("Download failed")
+			// Attempt install
+			} else if err := Install(progress, status); err != nil {
+				dialog.ShowError(err, parent)
+				status.SetText("Install failed")
 			} else {
 				progress.SetValue(1)
 				status.SetText("Installation successful!")
