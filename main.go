@@ -139,7 +139,78 @@ func Download(progress *widget.ProgressBar, status *widget.Label) error {
 
 	return nil
 }
+
+// Attempts to extract input zip file to output destination
+func Extract(input, output string) error {
+	// Try to open file
+	reader, err := zip.OpenReader(input)
+	if err != nil {
+		return err
 	}
+	// Close reader when we're done
+	defer func() {
+		if err := reader.Close(); err != nil {
+			panic(err)
+		}
+	}()
+	// Helper function to extract each file in a zip
+	extractAndWrite := func(file *zip.File) error {
+		// Open file for reading
+		readCloser, err := file.Open()
+		if err != nil {
+			return err
+		}
+		// Close file when we're done
+		defer func() {
+			if err := readCloser.Close(); err != nil {
+				panic(err)
+			}
+		}()
+		// Get full output path
+		path := filepath.Join(output, file.Name)
+		// If it's just a directory, create it only
+		if file.FileInfo().IsDir() {
+			if err := os.MkdirAll(path, file.Mode()); err != nil {
+				return err
+			}
+		// If it's a file, actually extract it
+		} else {
+			// Create directory for file if needed
+			if err := os.MkdirAll(filepath.Dir(path), file.Mode()); err != nil {
+				return err
+			}
+			// Create output file
+			outFile, err := os.OpenFile(path, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, file.Mode())
+			if err != nil {
+				return err
+			}
+			// Close output file after we're done
+			defer func() {
+				if err := outFile.Close(); err != nil {
+					panic(err)
+				}
+			}()
+			// Copy to output file
+			_, err = io.Copy(outFile, readCloser)
+			if err != nil {
+				return err
+			}
+		}
+		// Nothing went wrong, no error
+		return nil
+	}
+	// Loop through all files in zip
+	for _, file := range reader.File {
+		// Attempt to extract file
+		err := extractAndWrite(file)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 }
 
 func MakeContent(parent fyne.Window) fyne.CanvasObject {
