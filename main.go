@@ -17,6 +17,7 @@ import (
 )
 
 // Application name
+// (preferably without spaces as this will be used in install path)
 const appName = "APP_NAME"
 
 // Base URL for downloaded files
