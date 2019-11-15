@@ -105,7 +105,7 @@ func Download(progress *widget.ProgressBar, status *widget.Label) error {
 		// Get file we're downloading
 		file := baseUrl + fmt.Sprintf(files[i], runtime.GOOS)
 		fileName := GetFileFromPath(file)
-		fmt.Println("Attempting to download:", file)
+		fmt.Println("Download:\t", file)
 		status.SetText(fmt.Sprintf("[%d/%d] Downloading %s...", i + 1, len(files), fileName))
 		// Create request
 		request, err := grab.NewRequest(GetTempPath() + fileName, file)
@@ -225,7 +225,7 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 		// Get file we're installing
 		file := GetTempPath() + fmt.Sprintf(files[i], runtime.GOOS)
 		fileName := GetFileFromPath(file)
-		fmt.Println("Attempting to install:", file)
+		fmt.Println("Install:\t", file)
 		status.SetText(fmt.Sprintf("[%d/%d] Installing %s...", i + 1, len(files), fileName))
 		// Check if zip file
 		if strings.HasSuffix(fileName, ".zip") {
