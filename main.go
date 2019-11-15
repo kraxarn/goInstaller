@@ -211,6 +211,33 @@ func Extract(input, output string) error {
 	return nil
 }
 
+func Install(progress *widget.ProgressBar, status *widget.Label) error {
+	// Create install directory if needed
+	if err := os.MkdirAll(GetInstallPath(), 0700); err != nil {
+		return err
+	}
+	// Loop over all files hopefully downloaded
+	for i := 0; i < len(files); i++ {
+		// Get file we're installing
+		file := GetTempPath() + fmt.Sprintf(files[i], runtime.GOOS)
+		fileName := GetFileFromPath(file)
+		fmt.Println("Attempting to install:", file)
+		status.SetText(fmt.Sprintf("[%d/%d] Installing %s...", i + 1, len(files), fileName))
+		// Check if zip file
+		if strings.HasSuffix(fileName, ".zip") {
+			// It's a zip file, extract it first
+			if err := Extract(file, GetInstallPath()); err != nil {
+				return err
+			}
+		} else {
+			// Any other file, just move it
+			if err := os.Rename(file, GetInstallPath() + fileName); err != nil {
+				return err
+			}
+		}
+	}
+	// Everything is fine
+	return nil
 }
 
 func MakeContent(parent fyne.Window) fyne.CanvasObject {
