@@ -75,7 +75,7 @@ func GetFileFromPath(path string) string {
 }
 
 // Starts download and updates progress bar 0-50
-func Download(progress *widget.ProgressBar) error {
+func Download(progress *widget.ProgressBar, status *widget.Label) error {
 	// Create HTTP client
 	client := grab.NewClient()
 	// Create a new request for each file to download
@@ -84,6 +84,7 @@ func Download(progress *widget.ProgressBar) error {
 		file := baseUrl + fmt.Sprintf(files[i], runtime.GOOS)
 		fileName := GetFileFromPath(file)
 		fmt.Println("Attempting to download:", file)
+		status.SetText(fmt.Sprintf("[%d/%d] Downloading %s...", i + 1, len(files), fileName))
 		// Create request
 		request, err := grab.NewRequest(GetTempPath() + fileName, file)
 		if err != nil {
