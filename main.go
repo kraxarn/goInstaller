@@ -34,6 +34,9 @@ var files = []string{
 	"%s.zip",
 }
 
+// goInstaller version
+const version = "v1.0"
+
 // Gets the username of the current user
 // TODO: Cache this as username probably doesn't change during execution
 func GetUsername() string {
@@ -398,7 +401,9 @@ func main() {
 			fyne.NewMenuItem("About", func() {
 				dialog.ShowInformation(
 					"About",
-					"goInstaller v0.1\nhttps://github.com/kraxarn/goInstaller\nLicensed under BSD-3", window)
+					fmt.Sprintf(
+						"goInstaller %s\nhttps://github.com/kraxarn/goInstaller\nLicensed under BSD-3",
+						version), window)
 			}),
 			fyne.NewMenuItem("Licenses", func() {
 				// Check if we already have a license window open
