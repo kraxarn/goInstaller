@@ -60,12 +60,19 @@ func GetUsername() string {
 }
 
 func GetTempPath() string {
-	// If we're not on windows
-	if runtime.GOOS != "windows" {
+	// darwin doesn't need username (probably)
+	if runtime.GOOS == "darwin" {
 		return "/tmp/"
 	}
-	// Get full Windows temp path
-	return fmt.Sprintf("C:/Users/%s/AppData/Local/Temp/", GetUsername())
+	// Try to match platform
+	var dir string
+	if runtime.GOOS == "windows" {
+		dir = "C:/Users/%s/AppData/Local/Temp/"
+	} else {
+		dir = "/home/%s/.cache/"
+	}
+	// Get full temp path
+	return fmt.Sprintf(dir, GetUsername())
 }
 
 // Gets the install path
