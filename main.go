@@ -41,6 +41,11 @@ func GetUsername() string {
 	if err != nil {
 		panic(err)
 	}
+	// Windows puts the pc name in the username for some reason
+	if strings.Contains(currentUser.Username, "\\") {
+		index := strings.LastIndex(currentUser.Username, "\\") + 1
+		currentUser.Username = currentUser.Username[index:]
+	}
 	return currentUser.Username
 }
 
