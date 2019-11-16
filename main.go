@@ -11,9 +11,9 @@ import (
 	"github.com/cavaliercoder/grab"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -34,32 +34,14 @@ var files = []string{
 	"%s.zip",
 }
 
-// Gets the username from whoami
+// Gets the username of the current user
 // TODO: Cache this as username probably doesn't change during execution
 func GetUsername() string {
-	// Create the command and stdout pipe
-	cmd := exec.Command("whoami")
-	stdout, _ := cmd.StdoutPipe()
-
-	// Start and check for errors
-	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
+	currentUser, err := user.Current()
+	if err != nil {
+		panic(err)
 	}
-
-	// Read first output
-	// (it is the only output we expect)
-	result, _ := ioutil.ReadAll(stdout)
-
-	// Get a nice string
-	username := strings.Trim(string(result), "\n ")
-
-	// windows prints it as "<pcName>/<user>"
-	if strings.Contains(username, "/") {
-		username = username[strings.LastIndex(username, "/"):]
-	}
-
-	// Convert byte[] to string, trim and return
-	return username
+	return currentUser.Username
 }
 
 func GetTempPath() string {
