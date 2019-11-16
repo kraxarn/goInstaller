@@ -50,8 +50,16 @@ func GetUsername() string {
 	// (it is the only output we expect)
 	result, _ := ioutil.ReadAll(stdout)
 
+	// Get a nice string
+	username := strings.Trim(string(result), "\n ")
+
+	// windows prints it as "<pcName>/<user>"
+	if strings.Contains(username, "/") {
+		username = username[strings.LastIndex(username, "/"):]
+	}
+
 	// Convert byte[] to string, trim and return
-	return strings.Trim(fmt.Sprintf("%s", result), "\n ")
+	return username
 }
 
 func GetTempPath() string {
