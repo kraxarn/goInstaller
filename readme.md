@@ -16,7 +16,8 @@
 The installer is mostly targeted towards Windows, but also works fine on Linux.
 There is some support for macOS, but due to how different the platform is when it comes to 
 application structure, it may not work very well. Instead, it is recommended to just distribute 
-a single zip file with the app file inside of it.
+a single zip file with the app file inside of it. macOS has also stopped supporting OpenGL, 
+which this application relies on, which may cause issues on newer versions of macOS.
 
 ## Why are there no binary releases?
 Currently, you need to edit the first few lines in the `main.go` file to customize for your
