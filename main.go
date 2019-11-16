@@ -298,7 +298,7 @@ func CreateShortcut() error {
 		// C:/Users/<user>/Roaming/Microsoft/Windows/Start Menu/Programs
 		// We need to create a temporary Visual Basic file and then execute it
 		location := fmt.Sprintf(
-			"C:/Users/%s/Roaming/Microsoft/Windows/Start Menu/Programs/%s.lnk", GetUsername(), appName)
+			"C:/Users/%s/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/%s.lnk", GetUsername(), appName)
 		target   := GetInstallPath() + GetExecutableName()
 		icon     := GetInstallPath() + files[1]
 		vbs := fmt.Sprintf("Set link = WScript.CreateObject(\"WScript.Shell\").CreateShortcut(\"%s\")\n" +
