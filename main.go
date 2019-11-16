@@ -110,7 +110,13 @@ func Download(progress *widget.ProgressBar, status *widget.Label) error {
 	// Create a new request for each file to download
 	for i := 0; i < len(files); {
 		// Get file we're downloading
-		file := baseUrl + fmt.Sprintf(files[i], runtime.GOOS)
+		file := baseUrl
+		// Check if we need the os
+		if strings.Contains(files[i], "%s") {
+			file += fmt.Sprintf(files[i], runtime.GOOS)
+		} else {
+			file += files[i]
+		}
 		fileName := GetFileFromPath(file)
 		fmt.Println("Download:\t", file)
 		status.SetText(fmt.Sprintf("[%d/%d] Downloading %s...", i + 1, len(files), fileName))
