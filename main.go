@@ -250,8 +250,7 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 		}
 		fileName := GetFileFromPath(file)
 		fmt.Println("Install:\t", file)
-		status.SetText(fmt.Sprintf("[%d/%d] Installing %s...", i + 1, len(files), fileName))
-		// Check if zip file
+		status.SetText(fmt.Sprintf("[%d/%d] Installing %s...", i+1, len(files), fileName))
 		if strings.HasSuffix(fileName, ".zip") {
 			// It's a zip file, extract it first
 			if err := Extract(file, GetInstallPath(), progress); err != nil {
