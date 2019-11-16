@@ -80,7 +80,7 @@ func GetInstallPath() string {
 	case "linux":
 		dir = "/home/%s/.local/share/%s/"
 	case "darwin":
-		dir = "/home/%s/Applications/%s/"
+		return fmt.Sprintf("/Applications/%s/", appName)
 	}
 	// Return formatted string
 	return fmt.Sprintf(dir, GetUsername(), appName)
