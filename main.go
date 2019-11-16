@@ -63,6 +63,7 @@ func GetUsername() string {
 }
 
 func GetTempPath() string {
+	// TODO: ioutil.TempDir
 	// darwin doesn't need username (probably)
 	if runtime.GOOS == "darwin" {
 		return "/tmp/"
@@ -321,6 +322,7 @@ func CreateShortcut() error {
 }
 
 func MakeContent(parent fyne.Window) fyne.CanvasObject {
+	// TODO: Detect if already installed and use Uninstall/Update options instead
 	// Install progress
 	progress := widget.NewProgressBar()
 	// Status message
