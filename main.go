@@ -240,7 +240,13 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 	// Loop over all files hopefully downloaded
 	for i := 0; i < len(files); i++ {
 		// Get file we're installing
-		file := GetTempPath() + fmt.Sprintf(files[i], runtime.GOOS)
+		file := GetTempPath()
+		// Check if we need os
+		if strings.Contains(files[i], "%s") {
+			file += fmt.Sprintf(files[i], runtime.GOOS)
+		} else {
+			file += files[i]
+		}
 		fileName := GetFileFromPath(file)
 		fmt.Println("Install:\t", file)
 		status.SetText(fmt.Sprintf("[%d/%d] Installing %s...", i + 1, len(files), fileName))
