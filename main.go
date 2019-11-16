@@ -244,6 +244,10 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 			if err := Extract(file, GetInstallPath(), progress); err != nil {
 				return err
 			}
+			// Delete file after extracting
+			if err := os.Remove(file); err != nil {
+				return err
+			}
 		} else {
 			// Any other file, just move it
 			if err := os.Rename(file, GetInstallPath() + fileName); err != nil {
