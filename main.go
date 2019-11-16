@@ -268,6 +268,15 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 			execName := fileName
 			if i == 0 {
 				execName = GetExecutableName()
+				// Make file executable on linux/darwin
+				if runtime.GOOS != "windows" {
+					cmd := exec.Command("chmod", "+x", file)
+					if err := cmd.Start(); err != nil {
+						return err
+					} else if err := cmd.Wait(); err != nil {
+						return err
+					}
+				}
 			}
 			// Any other file, just move it
 			if err := os.Rename(file, GetInstallPath() + execName); err != nil {
