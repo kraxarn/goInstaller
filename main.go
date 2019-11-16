@@ -340,6 +340,10 @@ func MakeContent(parent fyne.Window) fyne.CanvasObject {
 			} else if err := Install(progress, status); err != nil {
 				dialog.ShowError(err, parent)
 				status.SetText("Install failed")
+				// Attempt to create shortcut
+			} else if err := CreateShortcut(); err != nil {
+				dialog.ShowError(err, parent)
+				status.SetText("Shortcut creation failed")
 			} else {
 				progress.SetValue(1)
 				status.SetText("Installation successful!")
