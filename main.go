@@ -104,6 +104,10 @@ func Download(progress *widget.ProgressBar, status *widget.Label) error {
 			file += files[i]
 		}
 		fileName := GetFileFromPath(file)
+		// If downloading binary file on windows, add .exe
+		if i == 0 && runtime.GOOS == "windows" {
+			fileName += ".exe"
+		}
 		fmt.Println("Download:\t", file)
 		status.SetText(fmt.Sprintf("[%d/%d] Downloading %s...", i + 1, len(files), fileName))
 		// Create request
@@ -218,6 +222,16 @@ func Extract(input, output string, progress *widget.ProgressBar) error {
 	return nil
 }
 
+// Get the name of the executable, often just the app name
+func GetExecutableName() string {
+	execName := appName
+	// Add exe to executable if windows
+	if runtime.GOOS == "windows" {
+		execName += ".exe"
+	}
+	return execName
+}
+
 func Install(progress *widget.ProgressBar, status *widget.Label) error {
 	// Create install directory if needed
 	if err := os.MkdirAll(GetInstallPath(), 0700); err != nil {
@@ -247,8 +261,13 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 				return err
 			}
 		} else {
+			// If executable, rename to project name first
+			execName := fileName
+			if i == 0 {
+				execName = GetExecutableName()
+			}
 			// Any other file, just move it
-			if err := os.Rename(file, GetInstallPath() + fileName); err != nil {
+			if err := os.Rename(file, GetInstallPath() + execName); err != nil {
 				return err
 			}
 		}
@@ -265,9 +284,9 @@ func CreateShortcut() error {
 	// linux uses a simple desktop file
 	if runtime.GOOS == "linux" {
 		// Create initial shortcut text
-		// (this assumes executable contains os and icon doesn't)
+		// (this icon doesn't contain os)
 		content := fmt.Sprintf("[Desktop Entry]\nName=%s\nType=Application\nTerminal=false\nExec=%s\nIcon=%s",
-			appName, fmt.Sprintf("%s%s", GetInstallPath(), fmt.Sprintf(files[0], runtime.GOOS)),
+			appName, GetInstallPath() + appName,
 			fmt.Sprintf("%s%s", GetInstallPath(), files[1]))
 		// Try to write to file
 		if err := ioutil.WriteFile(fmt.Sprintf("/home/%s/.local/share/applications/%s.desktop",
@@ -278,10 +297,13 @@ func CreateShortcut() error {
 	} else if runtime.GOOS == "windows" {
 		// C:/Users/<user>/Roaming/Microsoft/Windows/Start Menu/Programs
 		// We need to create a temporary Visual Basic file and then execute it
-		location := fmt.Sprintf("C:/Users/%s/Roaming/Microsoft/Windows/Start Menu/Programs/%s.lnk", GetUsername(), appName)
-		target   := fmt.Sprintf("%s%s", GetInstallPath(), fmt.Sprintf(files[0], runtime.GOOS))
-		icon     := fmt.Sprintf("%s%s", GetInstallPath(), files[1])
-		vbs := fmt.Sprintf("Set link = WScript.CreateObject(\"WScript.Shell\").CreateShortcut(\"%s\")\nlink.TargetPath = \"%s\"\nlink.IconLocation = \"%s\"\nlink.Description = \"%s\"\n link.Save", location, target, icon, appName)
+		location := fmt.Sprintf(
+			"C:/Users/%s/Roaming/Microsoft/Windows/Start Menu/Programs/%s.lnk", GetUsername(), appName)
+		target   := GetInstallPath() + GetExecutableName()
+		icon     := GetInstallPath() + files[1]
+		vbs := fmt.Sprintf("Set link = WScript.CreateObject(\"WScript.Shell\").CreateShortcut(\"%s\")\n" +
+			"link.TargetPath = \"%s\"\nlink.IconLocation = \"%s\"\nlink.Description = \"%s\"\n link.Save",
+			location, target, icon, appName)
 		// Write vbs to file
 		scriptFile := GetTempPath() + "CreateShortcut.vbs"
 		if err := ioutil.WriteFile(scriptFile, []byte(vbs), 0777); err != nil {
@@ -295,6 +317,7 @@ func CreateShortcut() error {
 		if err := cmd.Wait(); err != nil {
 			return err
 		}
+		// Remove it
 		if err := os.Remove(scriptFile); err != nil {
 			return err
 		}
