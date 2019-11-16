@@ -26,12 +26,15 @@ const appName = "APP_NAME"
 
 // Base URL for downloaded files
 // (%s gets replaced by current platform, windows/linux/darwin)
-const baseUrl = "https://example.com/%s.zip"
+const baseUrl = "https://example.com/"
 
 // All files to download
 // Only files ending with .zip are extracted
+// First file *must* be executable and second *must* be icon
 var files = []string{
-	"%s.zip",
+	"%s",
+	"icon.png",
+	"%s-data.zip",
 }
 
 // goInstaller version
