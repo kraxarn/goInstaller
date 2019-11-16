@@ -129,7 +129,7 @@ func Download(progress *widget.ProgressBar, status *widget.Label) error {
 		response := client.Do(request)
 
 		// Create ticker
-		ticker := time.NewTicker(time.Second)
+		ticker := time.NewTicker(time.Millisecond)
 
 		// Create variable for when to run loop
 		run := true
