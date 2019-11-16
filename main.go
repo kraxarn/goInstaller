@@ -328,9 +328,15 @@ func MakeContent(parent fyne.Window) fyne.CanvasObject {
 	// Status message
 	status := widget.NewLabel("Waiting...")
 
+	// Check if directory to install to already exists
+	installText := "Install"
+	if _, err := os.Stat(GetInstallPath()); err == nil {
+		installText = "Update"
+	}
+
 	// Install button
 	var btnInstall *widget.Button
-	btnInstall = widget.NewButton("Install", func() {
+	btnInstall = widget.NewButton(installText, func() {
 		go func() {
 			btnInstall.Disable()
 			progress.SetValue(0)
