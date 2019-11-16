@@ -274,6 +274,52 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 	return nil
 }
 
+func CreateShortcut() error {
+	// darwin doesn't use shortcuts
+	if runtime.GOOS == "darwin" {
+		return nil
+	}
+	// linux uses a simple desktop file
+	if runtime.GOOS == "linux" {
+		// Create initial shortcut text
+		// (this assumes executable contains os and icon doesn't)
+		content := fmt.Sprintf("[Desktop Entry]\nName=%s\nType=Application\nTerminal=false\nExec=%s\nIcon=%s",
+			appName, fmt.Sprintf("%s%s", GetInstallPath(), fmt.Sprintf(files[0], runtime.GOOS)),
+			fmt.Sprintf("%s%s", GetInstallPath(), files[1]))
+		// Try to write to file
+		if err := ioutil.WriteFile(fmt.Sprintf("/home/%s/.local/share/applications/%s.desktop",
+			GetUsername(), strings.ToLower(appName)), []byte(content), 0700); err != nil {
+			return err
+		}
+	// windows uses annoying binary lnk files
+	} else if runtime.GOOS == "windows" {
+		// C:/Users/<user>/Roaming/Microsoft/Windows/Start Menu/Programs
+		// We need to create a temporary Visual Basic file and then execute it
+		location := fmt.Sprintf("C:/Users/%s/Roaming/Microsoft/Windows/Start Menu/Programs/%s.lnk", GetUsername(), appName)
+		target   := fmt.Sprintf("%s%s", GetInstallPath(), fmt.Sprintf(files[0], runtime.GOOS))
+		icon     := fmt.Sprintf("%s%s", GetInstallPath(), files[1])
+		vbs := fmt.Sprintf("Set link = WScript.CreateObject(\"WScript.Shell\").CreateShortcut(\"%s\")\nlink.TargetPath = \"%s\"\nlink.IconLocation = \"%s\"\nlink.Description = \"%s\"\n link.Save", location, target, icon, appName)
+		// Write vbs to file
+		scriptFile := GetTempPath() + "CreateShortcut.vbs"
+		if err := ioutil.WriteFile(scriptFile, []byte(vbs), 0777); err != nil {
+			return err
+		}
+		// Execute script
+		cmd := exec.Command("wscript", scriptFile)
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+		if err := cmd.Wait(); err != nil {
+			return err
+		}
+		if err := os.Remove(scriptFile); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func MakeContent(parent fyne.Window) fyne.CanvasObject {
 	// Install progress
 	progress := widget.NewProgressBar()
