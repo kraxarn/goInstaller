@@ -1,6 +1,8 @@
 # goInstaller: Generic installer written in Go
 (not just for applications written in Go)
 
+![](https://i.vgy.me/5qjQO6.png)
+
 ## How it installs
 * Downloads set files
 * Extracts (if zip) or move downloded files to a specific location
