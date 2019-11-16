@@ -241,7 +241,7 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 		// Check if zip file
 		if strings.HasSuffix(fileName, ".zip") {
 			// It's a zip file, extract it first
-			if err := Extract(file, GetInstallPath()); err != nil {
+			if err := Extract(file, GetInstallPath(), progress); err != nil {
 				return err
 			}
 		} else {
