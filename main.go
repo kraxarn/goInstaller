@@ -109,10 +109,6 @@ func Download(progress *widget.ProgressBar, status *widget.Label) error {
 			file += files[i]
 		}
 		fileName := GetFileFromPath(file)
-		// If downloading binary file on windows, add .exe
-		if i == 0 && runtime.GOOS == "windows" {
-			fileName += ".exe"
-		}
 		fmt.Println("Download:\t", file)
 		status.SetText(fmt.Sprintf("[%d/%d] Downloading %s...", i + 1, len(files), fileName))
 		// Create request
