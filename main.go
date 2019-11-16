@@ -152,7 +152,7 @@ func Download(progress *widget.ProgressBar, status *widget.Label) error {
 }
 
 // Attempts to extract input zip file to output destination
-func Extract(input, output string) error {
+func Extract(input, output string, progress *widget.ProgressBar) error {
 	// Try to open file
 	reader, err := zip.OpenReader(input)
 	if err != nil {
@@ -211,7 +211,11 @@ func Extract(input, output string) error {
 		return nil
 	}
 	// Loop through all files in zip
-	for _, file := range reader.File {
+	for i := 0; i < len(reader.File); i++ {
+		// Get current file
+		file := reader.File[i]
+		// Update progress
+		progress.SetValue(float64(i + 1) / float64(len(reader.File)))
 		// Attempt to extract file
 		err := extractAndWrite(file)
 		if err != nil {
