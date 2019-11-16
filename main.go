@@ -34,16 +34,11 @@ var files = []string{
 	"%s.zip",
 }
 
-/// Gets the username from whoami
+// Gets the username from whoami
+// TODO: Cache this as username probably doesn't change during execution
 func GetUsername() string {
-	// Figure out what command to run
-	name := "whoami"
-	if runtime.GOOS == "windows" {
-		name += ".exe"
-	}
-
 	// Create the command and stdout pipe
-	cmd := exec.Command(name)
+	cmd := exec.Command("whoami")
 	stdout, _ := cmd.StdoutPipe()
 
 	// Start and check for errors
