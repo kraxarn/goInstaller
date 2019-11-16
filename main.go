@@ -302,7 +302,7 @@ func CreateShortcut() error {
 		target   := GetInstallPath() + GetExecutableName()
 		icon     := GetInstallPath() + files[1]
 		vbs := fmt.Sprintf("Set link = WScript.CreateObject(\"WScript.Shell\").CreateShortcut(\"%s\")\n" +
-			"link.TargetPath = \"%s\"\nlink.IconLocation = \"%s\"\nlink.Description = \"%s\"\n link.Save",
+			"link.TargetPath = \"%s\"\nlink.IconLocation = \"%s\"\nlink.Description = \"%s\"\nlink.Save",
 			location, target, icon, appName)
 		// Write vbs to file
 		scriptFile := GetTempPath() + "CreateShortcut.vbs"
