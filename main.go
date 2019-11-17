@@ -291,6 +291,19 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 	return nil
 }
 
+func GetShortcutLocation() string {
+	switch runtime.GOOS {
+	case "linux":
+		return fmt.Sprintf("/home/%s/.local/share/applications/%s.desktop",
+			GetUsername(), strings.ToLower(appName))
+	case "windows":
+		return fmt.Sprintf("C:/Users/%s/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/%s.lnk",
+			GetUsername(), appName)
+	}
+	// Return empty string by default
+	return ""
+}
+
 func CreateShortcut() error {
 	// darwin doesn't use shortcuts
 	if runtime.GOOS == "darwin" {
@@ -304,21 +317,17 @@ func CreateShortcut() error {
 			appName, GetInstallPath() + appName,
 			fmt.Sprintf("%s%s", GetInstallPath(), files[1]))
 		// Try to write to file
-		if err := ioutil.WriteFile(fmt.Sprintf("/home/%s/.local/share/applications/%s.desktop",
-			GetUsername(), strings.ToLower(appName)), []byte(content), 0700); err != nil {
+		if err := ioutil.WriteFile(GetShortcutLocation(), []byte(content), 0700); err != nil {
 			return err
 		}
 	// windows uses annoying binary lnk files
 	} else if runtime.GOOS == "windows" {
-		// C:/Users/<user>/Roaming/Microsoft/Windows/Start Menu/Programs
 		// We need to create a temporary Visual Basic file and then execute it
-		location := fmt.Sprintf(
-			"C:/Users/%s/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/%s.lnk", GetUsername(), appName)
-		target   := GetInstallPath() + GetExecutableName()
-		icon     := GetInstallPath() + files[1]
+		target := GetInstallPath() + GetExecutableName()
+		icon   := GetInstallPath() + files[1]
 		vbs := fmt.Sprintf("Set link = WScript.CreateObject(\"WScript.Shell\").CreateShortcut(\"%s\")\n" +
 			"link.TargetPath = \"%s\"\nlink.IconLocation = \"%s\"\nlink.Description = \"%s\"\nlink.Save",
-			location, target, icon, appName)
+			GetShortcutLocation(), target, icon, appName)
 		// Write vbs to file
 		scriptFile := GetTempPath() + "CreateShortcut.vbs"
 		if err := ioutil.WriteFile(scriptFile, []byte(vbs), 0777); err != nil {
