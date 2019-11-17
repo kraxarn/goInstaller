@@ -11,8 +11,7 @@
 ## Missing/planned features
 * Executing downloaded files (for runtime dependencies for example)
 * Automatically downloading the latest version from GitHub
-* Does not come with an uninstaller
-* On Windows, nothing is added to the control panel
+* On Windows, nothing is added to the control panel (to uninstall)
 
 ## OS Support
 The installer is mostly targeted towards Windows, but also works fine on Linux.
