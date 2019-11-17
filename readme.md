@@ -21,6 +21,12 @@ application structure, it may not work very well. Instead, it is recommended to 
 a single zip file with the app file inside of it. macOS has also stopped supporting OpenGL, 
 which this application relies on, which may cause issues on newer versions of macOS.
 
+## Versioning
+All version uses a major.minor style release. Minor releases are only fixes and changes/additions
+without changing the overall API. They are therefor always recommended to update to. Major releases
+however changes the overall API and will require changes to be made in the code. This can for example 
+be a change in how the config is specified.
+
 ## Why are there no binary releases?
 Currently, you need to edit the first few lines in the `main.go` file to customize for your
 application. It does not make any sense to distrubute binary releases when you first need
