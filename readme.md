@@ -1,7 +1,7 @@
 # goInstaller: Generic installer written in Go
 (not just for applications written in Go)
 
-![](https://i.vgy.me/5qjQO6.png)
+![](https://i.vgy.me/ILw9lr.png)
 
 ## How it installs
 * Downloads set files
