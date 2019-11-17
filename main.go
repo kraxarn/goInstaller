@@ -350,7 +350,24 @@ func CreateShortcut() error {
 	return nil
 }
 
-func MakeContent(parent fyne.Window) fyne.CanvasObject {
+// Remove application folder and shortcut
+func Uninstall(status *widget.Label) error {
+	// Remove application folder
+	status.SetText("Uninstalling application...")
+	if err := os.RemoveAll(GetInstallPath()); err != nil {
+		return err
+	}
+	// Remove shortcut (if needed)
+	status.SetText("Removing shortcut...")
+	shortcut := GetShortcutLocation()
+	if len(shortcut) > 0 {
+		if err := os.Remove(shortcut); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Return row with (un)install options, install is always last item
 func GetButtonContainer(installTapped func(), uninstallTapped func()) *fyne.Container {
 	// Check if directory to install to already exists
@@ -446,6 +463,14 @@ func GetLayout(parent fyne.Window) fyne.CanvasObject {
 			}
 		}, func() {
 			// Uninstall
+			progress.SetValue(0)
+			if err := Uninstall(status); err != nil {
+				dialog.ShowError(err, parent)
+				status.SetText("Uninstall failed")
+			} else {
+				progress.SetValue(1)
+				status.SetText("Uninstall successful")
+			}
 		}),
 	)
 }
