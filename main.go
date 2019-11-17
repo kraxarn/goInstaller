@@ -342,6 +342,7 @@ func CreateShortcut() error {
 }
 
 func MakeContent(parent fyne.Window) fyne.CanvasObject {
+func GetLayout(parent fyne.Window) fyne.CanvasObject {
 	// TODO: Detect if already installed and use Uninstall/Update options instead
 	// Install progress
 	progress := widget.NewProgressBar()
@@ -437,7 +438,7 @@ func main() {
 	))
 
 	// Set what to show in the window
-	window.SetContent(MakeContent(window))
+	window.SetContent(GetLayout(window))
 	// Show window
 	window.ShowAndRun()
 }
