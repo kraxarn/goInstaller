@@ -239,6 +239,45 @@ func GetExecutableName() string {
 	return execName
 }
 
+func Copy(input, output string) error {
+	// Open file to copy from
+	inFile, err := os.Open(input)
+	if err != nil {
+		return err
+	}
+	// Close file when we're done
+	defer func() {
+		if err := inFile.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Remove output if it already exists
+	// (if there's no error, it probably exists)
+	if _, err := os.Stat(output); err == nil {
+		return nil
+	}
+
+	// Create new file we're copying to
+	outFile, err := os.Create(output)
+	if err != nil {
+		return err
+	}
+	// Close file when we're done
+	defer func() {
+		if err := outFile.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Copy content to new file
+	if _, err := io.Copy(outFile, inFile); err != nil {
+		return err
+	}
+	// Everything went fine
+	return nil
+}
+
 func Install(progress *widget.ProgressBar, status *widget.Label) error {
 	// Create install directory if needed
 	if err := os.MkdirAll(GetInstallPath(), 0700); err != nil {
