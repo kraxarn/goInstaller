@@ -402,23 +402,22 @@ func GetButtonContainer(installTapped func(), uninstallTapped func()) *fyne.Cont
 }
 
 func GetLayout(parent fyne.Window) fyne.CanvasObject {
-	// TODO: Detect if already installed and use Uninstall/Update options instead
 	// Install progress
 	progress := widget.NewProgressBar()
 	// Status message
 	status := widget.NewLabel("Waiting...")
 
-	// Check if directory to install to already exists
-	installText := "Install"
-	if _, err := os.Stat(GetInstallPath()); err == nil {
-		installText = "Update"
-	}
-
-	// Install button
-	var btnInstall *widget.Button
-	btnInstall = widget.NewButton(installText, func() {
-		go func() {
-			btnInstall.Disable()
+	// Main layout
+	return widget.NewVBox(
+		// Label with what to install
+		widget.NewGroup(fmt.Sprintf("Welcome to the %s installer!", appName), status),
+		// Install progress
+		progress,
+		// Install button
+		layout.NewSpacer(),
+		//btnInstall,
+		GetButtonContainer(func() {
+			// Install/Update
 			progress.SetValue(0)
 			// Attempt download
 			if err := Download(progress, status); err != nil  {
@@ -436,18 +435,9 @@ func GetLayout(parent fyne.Window) fyne.CanvasObject {
 				progress.SetValue(1)
 				status.SetText("Installation successful!")
 			}
-			btnInstall.Enable()
-		}()
-	})
-
-	return widget.NewVBox(
-		// Label with what to install
-		widget.NewGroup(fmt.Sprintf("Welcome to the %s installer!", appName), status),
-		// Install progress
-		progress,
-		// Install button
-		layout.NewSpacer(),
-		btnInstall,
+		}, func() {
+			// Uninstall
+		}),
 	)
 }
 
