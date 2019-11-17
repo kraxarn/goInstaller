@@ -37,6 +37,9 @@ var files = []string{
 	"%s-data.zip",
 }
 
+// Install self as "updater"
+const installSelf = true
+
 // goInstaller version
 const version = "v1.0"
 
@@ -322,6 +325,24 @@ func Install(progress *widget.ProgressBar, status *widget.Label) error {
 			}
 			// Any other file, just move it
 			if err := os.Rename(file, GetInstallPath() + execName); err != nil {
+				return err
+			}
+		}
+	}
+	// Install installer as updater if set
+	if installSelf {
+		// Get what the final file name should be
+		fileName := "updater"
+		if runtime.GOOS == "windows" {
+			fileName += ".exe"
+		}
+		// Get the from/to paths
+		from := os.Args[0]
+		to := GetInstallPath() + fileName
+		// Check if we're trying to copy to ourselves
+		if from != to {
+			// Copy to the right directory
+			if err := Copy(from, to); err != nil {
 				return err
 			}
 		}
