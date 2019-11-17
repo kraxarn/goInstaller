@@ -342,6 +342,65 @@ func CreateShortcut() error {
 }
 
 func MakeContent(parent fyne.Window) fyne.CanvasObject {
+// Return row with (un)install options, install is always last item
+func GetButtonContainer(installTapped func(), uninstallTapped func()) *fyne.Container {
+	// Check if directory to install to already exists
+	appInstalled := false
+	if _, err := os.Stat(GetInstallPath()); err == nil {
+		appInstalled = true
+	}
+	// Helper function to toggle button enable/disable
+	var toggleButtons = func(buttons []*widget.Button) {
+		for _, button := range buttons {
+			if button.Disabled() {
+				button.Enable()
+			} else {
+				button.Disable()
+			}
+		}
+	}
+	// If not installed, just return an install button
+	if !appInstalled {
+		var button *widget.Button
+		button = widget.NewButton("Install", func() {
+			go func() {
+				// Disable button
+				button.Disable()
+				// Run the main function
+				installTapped()
+				// Enable button again
+				button.Enable()
+			}()
+		})
+		return fyne.NewContainerWithLayout(layout.NewGridLayout(1), button)
+	}
+	// App is not installed, return uninstall and update buttons
+	var buttons []*widget.Button
+	buttons = []*widget.Button {
+		widget.NewButton("Uninstall", func() {
+			go func() {
+				// Disable buttons
+				toggleButtons(buttons)
+				// Run the main function
+				uninstallTapped()
+				// Enable button again
+				toggleButtons(buttons)
+			}()
+		}),
+		widget.NewButton("Update", func() {
+			go func() {
+				// Disable buttons
+				toggleButtons(buttons)
+				// Run the main function
+				installTapped()
+				// Enable button again
+				toggleButtons(buttons)
+			}()
+		}),
+	}
+	return fyne.NewContainerWithLayout(layout.NewGridLayout(2), buttons[0], buttons[1])
+}
+
 func GetLayout(parent fyne.Window) fyne.CanvasObject {
 	// TODO: Detect if already installed and use Uninstall/Update options instead
 	// Install progress
