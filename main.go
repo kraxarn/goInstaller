@@ -41,7 +41,7 @@ var files = []string{
 const installSelf = true
 
 // goInstaller version
-const version = "v1.0"
+const version = "v1.1"
 
 // Gets the username of the current user
 // TODO: Cache this as username probably doesn't change during execution
