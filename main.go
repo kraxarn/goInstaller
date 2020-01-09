@@ -398,9 +398,6 @@ func CreateShortcut() error {
 		if err := cmd.Run(); err != nil {
 			return err
 		}
-		if err := cmd.Wait(); err != nil {
-			return err
-		}
 		// Remove it
 		if err := os.Remove(scriptFile); err != nil {
 			return err
